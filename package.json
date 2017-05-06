@@ -1,0 +1,30 @@
+{
+  "name": "p-spawn",
+  "version": "0.1.0",
+  "description": "Yet another spawn promise!",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/BriteSnow/node-p-spawn.git"
+  },
+  "keywords": [
+    "fs",
+    "file",
+    "fs-extra",
+    "list files",
+    "watch"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "mocha": "^3.3.0"
+  },  
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha"
+  },
+  "author": "Jeremy Chone <jeremy.chone@gmail.com> (http://jeremychone.com)",
+  "license": "MIT"
+}
