@@ -3,8 +3,18 @@ Yet another spawn promise.
 
 
 ```js
-var spawn = require("p-spawn");
+const spawn = require("p-spawn");
 
-spawn("echo", ["hello world"]);
+// will console log the stdout and stderr
+await spawn("echo", ["hello world"]);
 
+
+// will not console log the stdout but rather to forward in onStdout
+var txt = [];
+await spawn("echo", ["hello world"], {
+  onStdout: (data) => {
+    txt.push(data.toString());
+  }
+});
+console.log(txt.join("\n"));
 ```
