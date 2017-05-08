@@ -17,4 +17,12 @@ await spawn("echo", ["hello world"], {
   }
 });
 console.log(txt.join("\n"));
+
+// we an pass spawn options as well
+await spawn("pwd", {
+  cwd: "./test",
+  onStdout: (data) => {
+    txt.push(data.toString());
+  }
+});
 ```
