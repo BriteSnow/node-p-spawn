@@ -5,7 +5,7 @@ const spawn = require ("../index.js");
 describe("spawn", function(){
 
 	it("simple echo", async () => {
-		await spawn("echo", ["hello world"]);
+		await spawn("echo", ["hello world"],{cwd: "./test"});
 	});
 
 	it("onStdout", async () => {

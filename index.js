@@ -50,6 +50,15 @@ function p_spawn(cmd, a_args, a_opts){
 			params.push(cpOpts);
 		}
 
+		// if we have the toConsole for the stdout (and no capture), we print the command to be executed
+		if (opts.toConsole && !opts.onStdout && stdoutData == null){
+			console.log(">>> Will execute: " + fullCmd(cmd, a_args));			
+			if (cpOpts && cpOpts.cwd){
+				console.log("        from dir: " + cpOpts.cwd);
+			}
+		}
+
+
 		var ps = cp.spawn.apply(cp, params);
 
 		ps.stdout.on("data", (data) => {
