@@ -1,6 +1,6 @@
 {
   "name": "p-spawn",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Yet another spawn promise!",
   "main": "src/index.js",
   "repository": {
