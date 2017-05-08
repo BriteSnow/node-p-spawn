@@ -8,14 +8,15 @@ var defaultSpawnOpts = {
 	toConsole: true
 };
 
-// Call the child_process.spawn and output the stdout in the console by default. 
-// Note: should be used rather than the exec for all sh
+// Promisified child_process.spawn, with more option, and stdout/stderr to console by default. 
+// 
 // - cmd {String}: (required) The command name e.g., "aws" 
 // - args {Array}: (optional) The array of argument string, without space. e.g., ["s3", "--profile", "dist", "sync", s3Path, tenantDir];
 // - opts:
-//   - toConsole {boolean}: (default true). If true, stdout.on("data" and stderr.on("data" are printed to the console.log
-//   - onStdout {fn(data)}: forward of the stdout.on("data" to this function (same data passed). This will turn off console.log for stdout
-//   - onStderr {fn(data)}: forward of the stderr.on("data" to this function (same data passed). This will turn off console.log for stderr
+//   - toConsole {boolean}: (default true). If true, stdout.on("data") and stderr.on("data") are printed to the console.log
+//   - capture {string|array}: ["stdout","stderr"] if any of those set, it will get captured and returned (i.e. resolve as {stdout, stderr})
+//   - onStdout {fn(data)}: forward of the stdout.on("data") to this function. This will turn off console.log for stdout
+//   - onStderr {fn(data)}: forward of the stderr.on("data") to this function. This will turn off console.log for stderr
 //   - Any other child_process_options (https://nodejs.org/api/child_process.html#child_process_options_stdio)
 // 
 // Return promise that will resolve with the exit code.
@@ -25,9 +26,20 @@ function p_spawn(cmd, a_args, a_opts){
 	// get the eventual opts and build the spawn option
 	var opts = (arguments.length === 3)?a_opts:a_args;
 	opts = Object.assign({}, defaultSpawnOpts,opts);
+
+	// build the spawn options
 	var cpOpts = extractCPOptions(opts);
 	
+	// make sure it is an array if defined
+	var capture = (opts.capture && typeof opts.capture === "string")?[opts.capture]:opts.capture;
+
+
+	var stdoutData = (capture && capture.includes("stdout"))?[]:null;
+	var stderrData = (capture && capture.includes("stderr"))?[]:null;
+
 	return new Promise(function(resolve, reject){
+
+		
 
 		// build the params list depending of what has been defined
 		var params = [cmd];
@@ -41,25 +53,20 @@ function p_spawn(cmd, a_args, a_opts){
 		var ps = cp.spawn.apply(this, params);
 
 		ps.stdout.on("data", (data) => {
-			if (opts.onStdout){
-				opts.onStdout(data);
-			}else if (opts.toConsole){
-				console.log(data.toString());
-			}			
+			stdHandler(data, false, opts,  stdoutData);
 		});
 
 		ps.stderr.on("data", (data) => {
-			if (opts.onStderr){
-				opts.onStderr(data);
-			}else if (opts.toConsole){
-				console.log("\nstderr: " + data.toString() + "\n");
-			}				
+			stdHandler(data, true, opts,  stderrData);
 		});
 
 		ps.on('close', (code) => {
 			if (code !== 0){
 				reject(`Error executing ` + fullCmd(cmd, a_args));
 			}else{
+				if (stdoutData != null){
+					resolve({stdout: stdoutData.join("\n")});
+				}
 				resolve(code);
 			}
 		});
@@ -69,6 +76,31 @@ function p_spawn(cmd, a_args, a_opts){
 		});
 	});
 }
+
+
+function stdHandler(data, isStderr, opts, stdData){
+	var toConsole = opts.toConsole;
+
+	var onStd = (isStderr)?opts.onStderr:opts.onStdout;
+
+	// this will turn off the console output
+	if (onStd){
+		onStd(data);
+		toConsole = false;
+	}
+
+	if (stdData != null){
+		stdData.push(data.toString().trim());
+		toConsole = false;
+	}
+
+	if (toConsole){
+		let prefix = (isStderr)?"stderr: ":"";
+		console.log(prefix + data.toString());
+	}			
+
+}
+
 
 function fullCmd(cmd, args){
 	if (args){

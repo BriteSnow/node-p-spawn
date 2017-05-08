@@ -35,6 +35,13 @@ describe("spawn", function(){
 	});
 
 
+	it("onStdout capture", async () => {
+
+		var r = await spawn("echo", ["hello world"], {capture: "stdout"});
+
+		assert.equal(r.stdout, "hello world");
+	});
+
 
 	it("fail test", async () => {
 
