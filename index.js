@@ -50,7 +50,7 @@ function p_spawn(cmd, a_args, a_opts){
 			params.push(cpOpts);
 		}
 
-		var ps = cp.spawn.apply(this, params);
+		var ps = cp.spawn.apply(cp, params);
 
 		ps.stdout.on("data", (data) => {
 			stdHandler(data, false, opts,  stdoutData);
