@@ -64,10 +64,16 @@ function p_spawn(cmd, a_args, a_opts){
 			if (code !== 0){
 				reject(`Error executing ` + fullCmd(cmd, a_args));
 			}else{
+				var r = {code: code};
+
 				if (stdoutData != null){
-					resolve({stdout: stdoutData.join("\n")});
+					r.stdout = stdoutData.join("\n");
 				}
-				resolve(code);
+				if (stderrData != null){
+					r.stderr = stderrData.join("\n");	
+				}
+
+				resolve(r);
 			}
 		});
 
