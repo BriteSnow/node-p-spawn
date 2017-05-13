@@ -13,6 +13,7 @@ Parameters:
 - args {Array}: (optional) The array of argument string, without space. e.g., ["s3", "--profile", "dist", "sync", s3Path, tenantDir];
 - opts:
   - toConsole {boolean}: (default true). If true, stdout.on("data") and stderr.on("data") are printed to the console.log
+  - ingoreFail {boolean}: (default false)
   - capture {string|array}: ["stdout","stderr"] if any of those set, it will get captured and returned (i.e. resolve as {stdout, stderr})
   - onStdout {fn(data)}: forward of the stdout.on("data") to this function. This will turn off console.log for stdout
   - onStderr {fn(data)}: forward of the stderr.on("data") to this function. This will turn off console.log for stderr

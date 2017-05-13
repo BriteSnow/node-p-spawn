@@ -13,7 +13,8 @@ var defaultSpawnOpts = {
 // - cmd {String}: (required) The command name e.g., "aws" 
 // - args {Array}: (optional) The array of argument string, without space. e.g., ["s3", "--profile", "dist", "sync", s3Path, tenantDir];
 // - opts:
-//   - toConsole {boolean}: (default true). If true, stdout.on("data") and stderr.on("data") are printed to the console.log
+//   - toConsole {boolean}: (default true) If true, stdout.on("data") and stderr.on("data") are printed to the console.log
+//   - ingoreFail {boolean}: (default false) If true, the fail will not thrown an error (otherwise, if )
 //   - capture {string|array}: ["stdout","stderr"] if any of those set, it will get captured and returned (i.e. resolve as {stdout, stderr})
 //   - onStdout {fn(data)}: forward of the stdout.on("data") to this function. This will turn off console.log for stdout
 //   - onStderr {fn(data)}: forward of the stderr.on("data") to this function. This will turn off console.log for stderr
@@ -37,9 +38,7 @@ function p_spawn(cmd, a_args, a_opts){
 	var stdoutData = (capture && capture.includes("stdout"))?[]:null;
 	var stderrData = (capture && capture.includes("stderr"))?[]:null;
 
-	return new Promise(function(resolve, reject){
-
-		
+	return new Promise(function(resolve, reject){		
 
 		// build the params list depending of what has been defined
 		var params = [cmd];
@@ -70,8 +69,8 @@ function p_spawn(cmd, a_args, a_opts){
 		});
 
 		ps.on('close', (code) => {
-			if (code !== 0){
-				reject(`Error executing ` + fullCmd(cmd, a_args));
+			if (!opts.ignoreFail && code !== 0){
+				reject(new Error(`Error executing ` + fullCmd(cmd, a_args)));
 			}else{
 				var r = {code: code};
 
