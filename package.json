@@ -1,6 +1,6 @@
 {
   "name": "p-spawn",
-  "version": "0.2.0",
+  "version": "0.2.1-SNAPSHOT",
   "description": "Yet another spawn promise!",
   "main": "src/index.js",
   "repository": {
@@ -8,11 +8,11 @@
     "url": "git://github.com/BriteSnow/node-p-spawn.git"
   },
   "keywords": [
-    "fs",
-    "file",
-    "fs-extra",
-    "list files",
-    "watch"
+    "child_process",
+    "spawn",
+    "promise",
+    "async",
+    "await"
   ],
   "dependencies": {
   },
