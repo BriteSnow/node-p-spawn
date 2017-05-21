@@ -14,7 +14,7 @@ var defaultSpawnOpts = {
 // - args {Array}: (optional) The array of argument string, without space. e.g., ["s3", "--profile", "dist", "sync", s3Path, tenantDir];
 // - opts:
 //   - toConsole {boolean}: (default true) If true, stdio: ["pipe", process.stdio, process.stderr] 
-//   - ingoreFail {boolean}: (default false) If true, the fail will not thrown an error just resolve with .code non 0
+//   - ignoreFail {boolean}: (default false) If true, the fail will not thrown an error just resolve with .code non 0
 //   - capture {string|array}: ["stdout","stderr"] if any of those set, it will get captured and returned (i.e. resolve as {stdout, stderr})
 //   - onStdout {fn(data)}: forward of the stdout.on("data") to this function. This will turn stdio stdout to the default 'pipe' and therefore not printed to console
 //   - onStderr {fn(data)}: forward of the stderr.on("data") to this function. This will turn stdio stderr to the default 'pipe' and therefore not printed to console
@@ -23,7 +23,7 @@ var defaultSpawnOpts = {
 // 
 // Return promise that will resolve with the exit code, and the eventual .stdout and .stderr captures
 // 
-// Exception: will reject if we have a on("error") (except if opts.ingoreFail is set to true)
+// Exception: will reject if we have a on("error") (except if opts.ignoreFail is set to true)
 function p_spawn(cmd, a_args, a_opts){
 
 	// get the eventual opts and build the spawn option
