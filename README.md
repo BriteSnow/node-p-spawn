@@ -1,5 +1,5 @@
 
-Yet another spawn promise.
+Yet another spawn promise. (Zero dependency!)
 
 Promisified child_process.spawn, with more option, and stdout/stderr to console by default. 
 

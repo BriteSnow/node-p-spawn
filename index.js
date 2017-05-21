@@ -98,10 +98,10 @@ function p_spawn(cmd, a_args, a_opts){
 				var r = {code: code};
 
 				if (stdoutData != null){
-					r.stdout = stdoutData.join("\n");
+					r.stdout = stdoutData.join("");
 				}
 				if (stderrData != null){
-					r.stderr = stderrData.join("\n");	
+					r.stderr = stderrData.join("");	
 				}
 
 				resolve(r);
@@ -117,13 +117,14 @@ function p_spawn(cmd, a_args, a_opts){
 
 function stdHandler(data, onStd, stdData){
 
-	// this will turn off the console output
+	// if we have a onStd... 
 	if (onStd){
 		onStd(data);
 	}
 
+	// if we need to capture the data
 	if (stdData != null){
-		stdData.push(data.toString().trim());
+		stdData.push(data.toString());
 	}
 
 }
