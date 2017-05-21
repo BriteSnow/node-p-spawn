@@ -33,33 +33,37 @@ Exception: will reject if we have a on("error") (except if opts.ingoreFail is se
 Examples:
 
 ```js
-const spawn = require("p-spawn");
-
-// will console log the stdout and stderr
-await spawn("echo", ["hello world"]);
+const pspawn = require("p-spawn");
 
 
-// will not console log the stdout but rather to forward in onStdout
-var txt = [];
-await spawn("echo", ["hello world"], {
-  onStdout: (data) => {
-    txt.push(data.toString());
-  }
-});
-console.log(txt.join("\n"));
+async function test(){
+  // will console log the stdout and stderr
+  await pspawn("echo", ["hello world"]);
 
-// we an pass spawn options as well
-await spawn("pwd", {
-  cwd: "./test",
-  onStdout: (data) => {
-    txt.push(data.toString());
-  }
-});
 
-// we an pass spawn options as well
-var result = await spawn("echo",["hello world"], {capture: "stdout"});
+  // will not console log the stdout but rather to forward in onStdout
+  var txt = [];
+  await pspawn("echo", ["hello world"], {
+    onStdout: (data) => {
+      txt.push(data.toString());
+    }
+  });
+  console.log(txt.join("\n"));
 
-console.log(result.stdout); // "hello world"
+  // we an pass pspawn options as well
+  await pspawn("pwd", {
+    cwd: "./test",
+    onStdout: (data) => {
+      txt.push(data.toString());
+    }
+  });
+
+  // we an pass pspawn options as well
+  var result = await pspawn("echo",["hello world"], {capture: "stdout"});
+
+  console.log(result.stdout); // "hello world"  
+}
+
 
 
 ```
