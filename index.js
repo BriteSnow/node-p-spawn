@@ -1,8 +1,14 @@
 const cp = require("child_process");
-
+const fs = require("fs");
+const path = require("path");
+const {promisify} = require('util');
 
 module.exports = p_spawn;
 
+const fsUnlink = promisify(fs.unlink);
+const fsAccess = promisify(fs.access);
+const fsMkdir = promisify(fs.mkdir);
+const fsOpen = promisify(fs.open);
 
 var defaultSpawnOpts = {
 	toConsole: true
@@ -13,7 +19,8 @@ var defaultSpawnOpts = {
 // - cmd {String}: (required) The command name e.g., "aws" 
 // - args {Array}: (optional) The array of argument string, without space. e.g., ["s3", "--profile", "dist", "sync", s3Path, tenantDir];
 // - opts:
-//   - toConsole {boolean}: (default true) If true, stdio: ["pipe", process.stdio, process.stderr] 
+//   - toConsole {boolean}: (default true) If true, stdio: ["pipe", process.stdio, process.stderr]
+//	 - toFile: {string} If set, the stdout and stderr will be forwarded to a file. If string, the folders will be created if needed, and the file will created as well (the old one will be deleted if present)
 //   - ignoreFail {boolean}: (default false) If true, the fail will not thrown an error just resolve with .code non 0
 //   - capture {string|array}: ["stdout","stderr"] if any of those set, it will get captured and returned (i.e. resolve as {stdout, stderr})
 //   - onStdout {fn(data)}: forward of the stdout.on("data") to this function. This will turn stdio stdout to the default 'pipe' and therefore not printed to console
@@ -24,7 +31,7 @@ var defaultSpawnOpts = {
 // Return promise that will resolve with the exit code, and the eventual .stdout and .stderr captures
 // 
 // Exception: will reject if we have a on("error") (except if opts.ignoreFail is set to true)
-function p_spawn(cmd, a_args, a_opts){
+async function p_spawn(cmd, a_args, a_opts){
 
 	// get the eventual opts and build the spawn option
 	var opts = (arguments.length === 3)?a_opts:a_args;
@@ -38,8 +45,20 @@ function p_spawn(cmd, a_args, a_opts){
 	var stdoutData = (capture && capture.includes("stdout"))?[]:null;
 	var stderrData = (capture && capture.includes("stderr"))?[]:null;
 
-
 	var stdout = "pipe", stderr = "pipe";
+
+	if (opts.toFile){
+		opts.toConsole = false; // can only one or the other. 
+		let toFileInfo = path.parse(opts.toFile);
+		await fsMkdirs(toFileInfo.dir);
+
+		if (await fsExists(opts.toFile)){
+			await fsUnlink(opts.toFile);
+		}
+
+		stdout = fs.openSync(opts.toFile, "a");
+		stderr = fs.openSync(opts.toFile, "a");
+	}
 
 	// If we have toConsole and no capture and no onStd binding, we output to std
 	if (opts.toConsole && !opts.onStdout && stdoutData == null){
@@ -74,7 +93,6 @@ function p_spawn(cmd, a_args, a_opts){
 				console.log("        from dir: " + cpOpts.cwd);
 			}
 		}
-
 
 		var ps = cp.spawn.apply(cp, params);
 
@@ -161,3 +179,37 @@ function extractCPOptions(opts){
 		return cpOpts;
 	}
 }
+
+// --------- File Utils --------- //
+
+
+
+
+
+// Create all the missing path for this folder
+async function fsMkdirs(folderPath) {
+	var folders = [];
+
+	var tmpPath = path.normalize(folderPath);
+	var exists = await fsExists(tmpPath);
+
+	while (!exists) {
+		folders.push(tmpPath);
+		tmpPath = path.join(tmpPath, '..');
+		exists = await fsExists(tmpPath);
+	}
+
+	for (var i = folders.length - 1; i >= 0; i--) {
+		await fsMkdir(folders[i]);
+	}
+}
+
+async function fsExists(path){
+	try {
+		await fsAccess(path);
+		return true;
+	}catch(ex){
+		return false;
+	}
+}
+// --------- /File Utils --------- //

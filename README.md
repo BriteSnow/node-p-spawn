@@ -3,18 +3,22 @@ Yet another spawn promise. (Zero dependency!)
 
 Promisified child_process.spawn, with more option, and stdout/stderr to console by default. 
 
+NOTE: REQUIRE node.js > 8.0 (if you need more support, log ticket)
+
+
 ```js
 spawn(cmd, args, opts); // return Promise
 ```
 
-Parameters: 
+**Parameters:** 
 
 Promisified child_process.spawn, with more option, and stdout/stderr to console by default. 
 
 - cmd {String}: (required) The command name e.g., "aws" 
 - args {Array}: (optional) The array of argument string, without space. e.g., ["s3", "--profile", "dist", "sync", s3Path, tenantDir];
 - opts:
-  - toConsole {boolean}: (default true) If true, stdio: ["pipe", process.stdio, process.stderr] 
+  - toConsole {boolean}: (default true) If true, stdio: ["pipe", process.stdio, process.stderr]
+  - toFile: {string} If set, the stdout and stderr will be forwarded to a file. If string, the folders will be created if needed, and the file will created as well (the old one will be deleted if present)
   - ignoreFail {boolean}: (default false) If true, the fail will not thrown an error just resolve with .code non 0
   - capture {string|array}: ["stdout","stderr"] if any of those set, it will get captured and returned (i.e. resolve as {stdout, stderr})
   - onStdout {fn(data)}: forward of the stdout.on("data") to this function. This will turn stdio stdout to the default 'pipe' and therefore not printed to console
@@ -67,3 +71,4 @@ async function test(){
 
 
 ```
+

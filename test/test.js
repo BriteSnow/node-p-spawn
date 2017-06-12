@@ -1,6 +1,12 @@
 const assert = require("assert");
+const fs = require("fs");
 const spawn = require ("../index.js");
+const {promisify} = require("util");
 
+const fsReadFile = promisify(fs.readFile);
+
+
+var testOutDir = "./test/out/test-tofile";
 
 describe("spawn", function(){
 
@@ -39,9 +45,20 @@ describe("spawn", function(){
 
 		var r = await spawn("echo", ["hello world"], {capture: "stdout"});
 
-		assert.equal(r.stdout, "hello world");
+		assert.equal(r.stdout, "hello world\n");
 	});
 
+
+	it("toFile", async () => {
+
+		var logFile = "./test/out/testToFile.log";
+		var testContent = "hello world from toFile test";
+		await spawn("echo", [testContent], {toFile: logFile});
+
+		var content = await fsReadFile(logFile, "utf-8");
+		assert.equal(content.trim(), testContent);
+
+	});
 
 	it("fail test", async () => {
 
