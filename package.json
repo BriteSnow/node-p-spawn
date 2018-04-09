@@ -3,6 +3,7 @@
   "version": "0.3.0",
   "description": "Yet another spawn promise!",
   "main": "src/index.js",
+  "typings": "types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/BriteSnow/node-p-spawn.git"
