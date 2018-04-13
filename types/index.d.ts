@@ -1,6 +1,8 @@
 
 
 interface Options {
+	/** The optional dir to execute the command */
+	cwd?: string;
 	/** (default true) If true, stdio: ["pipe", process.stdio, process.stderr] */
 	toConsole?: boolean;
 	/** If set, the stdout and stderr will be forwarded to a file. If string, the folders will be created if needed, and the file will created as well (the old one will be deleted if present) */
