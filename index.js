@@ -10,7 +10,6 @@ const fsAccess = promisify(fs.access);
 const fsMkdir = promisify(fs.mkdir);
 
 var defaultSpawnOpts = {
-	toConsole: true
 };
 
 // See types/index.d.ts for doc
@@ -20,6 +19,10 @@ async function p_spawn(cmd, a_args, a_opts) {
 	var opts = (arguments.length === 3) ? a_opts : a_args;
 	opts = Object.assign({}, defaultSpawnOpts, opts);
 
+	// if toConsole is undefined, set it to true if no capture or onStdout
+	if (opts.toConsole == null && !opts.capture && !opts.onStdout) {
+		opts.toConsole = true;
+	}
 	// build the spawn options
 	var cpOpts = extractCPOptions(opts) || {};
 
@@ -69,8 +72,8 @@ async function p_spawn(cmd, a_args, a_opts) {
 			params.push(cpOpts);
 		}
 
-		// if we have the toConsole for the stdout (and no capture), we print the command to be executed
-		if (opts.toConsole && !opts.onStdout && stdoutData == null) {
+		// if we have the toConsole
+		if (opts.toConsole) {
 			console.log(">>> Will execute: " + fullCmd(cmd, a_args));
 			if (cpOpts && cpOpts.cwd) {
 				console.log("        from dir: " + cpOpts.cwd);
@@ -81,13 +84,13 @@ async function p_spawn(cmd, a_args, a_opts) {
 
 		if (ps.stdout) {
 			ps.stdout.on("data", (data) => {
-				stdHandler(data, opts.onStdout, stdoutData);
+				stdHandler(data, opts.onStdout, stdoutData, (opts.toConsole) ? process.stdout : null);
 			});
 		}
 
 		if (ps.stderr) {
 			ps.stderr.on("data", (data) => {
-				stdHandler(data, opts.onStderr, stderrData);
+				stdHandler(data, opts.onStderr, stderrData, (opts.toConsole) ? process.stderr : null);
 			});
 		}
 
@@ -116,8 +119,7 @@ async function p_spawn(cmd, a_args, a_opts) {
 }
 
 
-function stdHandler(data, onStd, stdData) {
-
+function stdHandler(data, onStd, stdData, processStd) {
 	// if we have a onStd... 
 	if (onStd) {
 		onStd(data);
@@ -126,6 +128,11 @@ function stdHandler(data, onStd, stdData) {
 	// if we need to capture the data
 	if (stdData != null) {
 		stdData.push(data.toString());
+	}
+
+	// if we have a processStd (because of toConsole was set, we write the datda)
+	if (processStd) {
+		processStd.write(data);
 	}
 
 }
