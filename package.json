@@ -15,16 +15,15 @@
     "async",
     "await"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "mocha": "^3.3.0"
-  },  
+    "mocha": "^5.2.0"
+  },
   "engines": {
     "node": ">=8.0.0"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha", 
+    "test": "./node_modules/.bin/mocha",
     "testg": "./node_modules/.bin/mocha -g"
   },
   "author": "Jeremy Chone <jeremy.chone@gmail.com> (http://jeremychone.com)",
