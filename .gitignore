@@ -4,6 +4,13 @@
 # ignore node_modules
 node_modules/
 
+# fail safe
+*.tgz
+*.png
+*.jpeg
+*.zip
+*.tar
+
 # prevent tmp/ should be for dev db and stuff
 tmp/
 #ignore dev/ folder

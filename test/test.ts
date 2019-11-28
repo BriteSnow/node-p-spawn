@@ -1,7 +1,7 @@
-const assert = require("assert");
-const fs = require("fs");
-const { spawn } = require("../index.js");
-const { promisify } = require("util");
+import * as assert from 'assert'
+import * as fs from 'fs'
+import { spawn } from '../src/index'
+import { promisify } from 'util'
 
 const fsReadFile = promisify(fs.readFile);
 
@@ -15,7 +15,7 @@ describe("spawn", function () {
 	});
 
 	it("onStdout", async () => {
-		var txt = null;
+		let txt: string | null = null;
 
 		await spawn("echo", ["hello world"], {
 			onStdout: (data) => {
@@ -23,12 +23,12 @@ describe("spawn", function () {
 			}
 		});
 
-		assert.equal(txt.trim(), "hello world");
+		assert.equal(txt!.trim(), "hello world");
 	});
 
 
 	it("onStdout with cwd", async () => {
-		var txt = null;
+		let txt: string | null = null;
 
 		await spawn("pwd", {
 			cwd: "./test",
@@ -37,13 +37,13 @@ describe("spawn", function () {
 			}
 		});
 
-		assert(txt.endsWith("test"), `should have ended with 'test' but was [${txt}]`);
+		assert(txt!.endsWith("test"), `should have ended with 'test' but was [${txt}]`);
 	});
 
 
 	it("onStdout capture", async () => {
 
-		var r = await spawn("echo", ["hello world"], { capture: "stdout" });
+		const r = await spawn("echo", ["hello world"], { capture: "stdout" });
 
 		assert.equal(r.stdout, "hello world\n");
 	});
@@ -51,18 +51,18 @@ describe("spawn", function () {
 
 	it("toFile", async () => {
 
-		var logFile = "./test/out/testToFile.log";
-		var testContent = "hello world from toFile test";
+		const logFile = "./test/out/testToFile.log";
+		const testContent = "hello world from toFile test";
 		await spawn("echo", [testContent], { toFile: logFile });
 
-		var content = await fsReadFile(logFile, "utf-8");
+		const content = await fsReadFile(logFile, "utf-8");
 		assert.equal(content.trim(), testContent);
 
 	});
 
 	it("capture-and-console", async () => {
 
-		var r = await spawn("echo", ["hello world"], { capture: "stdout", toConsole: true });
+		const r = await spawn("echo", ["hello world"], { capture: "stdout", toConsole: true });
 
 		assert.equal(r.stdout, "hello world\n");
 	});

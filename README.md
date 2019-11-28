@@ -19,7 +19,7 @@ import { spawn } from 'p-spawn'
 await spawn(cmd, args, opts); // return Promise
 ```
 
-[doc](types/index.d.ts)
+[doc](src/index.ts)
 
 Examples:
 
