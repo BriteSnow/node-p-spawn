@@ -1,5 +1,7 @@
 # Ignore mac info files
-.DS_Store
+.*
+
+!.gitignore
 
 # ignore node_modules
 node_modules/
@@ -18,6 +20,4 @@ dev/
 
 test/out
 
-# Ignore Sublime Text files
-*.sublime-project
-*.sublime-workspace
+dist/
