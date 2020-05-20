@@ -16,18 +16,18 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "typescript": "^3.7.2",
-    "ts-node": "^8.5.4",
-    "@types/node": "^12.12.14",
-    "@types/mocha": "^5.2.7",
-    "mocha": "^6.2.2"
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^14.0.4",
+    "mocha": "^7.1.2",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.3"
   },
   "engines": {
     "node": ">=12.0.0"
   },
   "scripts": {
-    "test": "TS_NODE_FILES=true ./node_modules/.bin/mocha",
-    "testg": "./node_modules/.bin/mocha -g"
+    "test": "TS_NODE_FILES=true ./node_modules/.bin/mocha -p ./test/tsconfig.json ./test/spec/*.spec.ts",
+    "testw": "./node_modules/.bin/mocha -g"
   },
   "author": "Jeremy Chone <jeremy.chone@gmail.com> (http://jeremychone.com)",
   "license": "MIT",
