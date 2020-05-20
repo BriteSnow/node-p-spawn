@@ -49,11 +49,8 @@ describe('spawn', function () {
 	});
 
 	it("env", async () => {
-		// JJJ="ttt" && echo ">>> $JJJ"
-
-		const r = await spawn('echo', ['hello world'], { capture: 'stdout', env: { JJJ: 'ttt' } });
-
-		equal(r.stdout, 'hello world\n');
+		const r = await spawn('env', { capture: 'stdout', env: { ...process.env, AAA: 'aaa' } });
+		equal(r.stdout?.includes('AAA=aaa'), true);
 	});
 
 

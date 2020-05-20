@@ -27,7 +27,7 @@
   },
   "scripts": {
     "test": "TS_NODE_FILES=true ./node_modules/.bin/mocha -p ./test/tsconfig.json ./test/spec/*.spec.ts",
-    "testw": "./node_modules/.bin/mocha -g"
+    "testw": "TS_NODE_FILES=true ./node_modules/.bin/mocha -p ./test/tsconfig.json ./test/spec/*.spec.ts  --watch --watch-files './test/**/*.ts, ./src/**/*.ts'"
   },
   "author": "Jeremy Chone <jeremy.chone@gmail.com> (http://jeremychone.com)",
   "license": "MIT",

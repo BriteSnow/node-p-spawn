@@ -1,9 +1,9 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-
-import { promisify } from 'util';
 import { WriteStream } from 'tty';
+import { promisify } from 'util';
+
 
 // module.exports = { spawn: p_spawn };
 
@@ -35,14 +35,19 @@ interface Options {
 	[key: string]: any;
 }
 
+interface Result {
+	code: number;
+	stdout?: string;
+	stderr?: string;
+}
 
 
 // See types/index.d.ts for doc
-export async function spawn(cmd: string): Promise<any>;
-export async function spawn(cmd: string, args: string[]): Promise<any>;
-export async function spawn(cmd: string, options: Options): Promise<any>;
-export async function spawn(cmd: string, args: string[], options: Options): Promise<any>;
-export async function spawn(cmd: string, arg_1?: string[] | Options, arg_2?: Options): Promise<any> {
+export async function spawn(cmd: string): Promise<Result>;
+export async function spawn(cmd: string, args: string[]): Promise<Result>;
+export async function spawn(cmd: string, options: Options): Promise<Result>;
+export async function spawn(cmd: string, args: string[], options: Options): Promise<Result>;
+export async function spawn(cmd: string, arg_1?: string[] | Options, arg_2?: Options): Promise<Result> {
 
 	// get the eventual opts and build the spawn option
 	const args: string[] | undefined = (arg_1 && arg_1 instanceof Array) ? arg_1 : undefined;
@@ -94,7 +99,7 @@ export async function spawn(cmd: string, arg_1?: string[] | Options, arg_2?: Opt
 
 	let ps: cp.ChildProcess | undefined;
 
-	const promise = new Promise(function (resolve, reject) {
+	const promise = new Promise<Result>(function (resolve, reject) {
 
 		// build the params list depending of what has been defined
 		// TODO: Needs to have the right types (still does not below with the cp.spawn.apply)
@@ -105,6 +110,7 @@ export async function spawn(cmd: string, arg_1?: string[] | Options, arg_2?: Opt
 		if (cpOpts) {
 			params.push(cpOpts);
 		}
+
 
 		// if we have the toConsole
 		if (opts.toConsole) {
