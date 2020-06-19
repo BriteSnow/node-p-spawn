@@ -1,6 +1,6 @@
 {
   "name": "p-spawn",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Yet another spawn promise!",
   "main": "dist/index.js",
   "repository": {
@@ -15,14 +15,14 @@
     "await"
   ],
   "dependencies": {
-    "rimraf": "^3.0.2"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.0.13",
     "mocha": "^8.0.1",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.5",
+    "rimraf": "^3.0.2"
   },
   "engines": {
     "node": ">=12.0.0"
