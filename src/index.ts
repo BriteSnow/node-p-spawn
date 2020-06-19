@@ -1,4 +1,4 @@
-import * as cp from 'child_process';
+import cp, { ChildProcess } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { WriteStream } from 'tty';
@@ -7,7 +7,6 @@ import { promisify } from 'util';
 
 // module.exports = { spawn: p_spawn };
 
-const fsUnlink = promisify(fs.unlink);
 const fsAccess = promisify(fs.access);
 const fsMkdir = promisify(fs.mkdir);
 
@@ -42,12 +41,32 @@ interface Result {
 }
 
 
-// See types/index.d.ts for doc
+
+/**
+ * Execute a spawn and return the Promise<Result>
+ * 
+ * Usage: 
+ * ```ts
+ * const result = await spawn('echo', ['hello','world'], {capture: 'stdout'});
+ * // result.stdout == "hello world"
+ * ```
+ */
 export async function spawn(cmd: string): Promise<Result>;
 export async function spawn(cmd: string, args: string[]): Promise<Result>;
 export async function spawn(cmd: string, options: Options): Promise<Result>;
 export async function spawn(cmd: string, args: string[], options: Options): Promise<Result>;
 export async function spawn(cmd: string, arg_1?: string[] | Options, arg_2?: Options): Promise<Result> {
+	return spawnCp(cmd, <any>arg_1, <any>arg_2)[0]; // widen type for passthrough
+}
+
+/**
+ * Execute the a spawn and return a tupple [Promise<Result>, ChildProcess] for full control
+ */
+export function spawnCp(cmd: string): [Promise<Result>, ChildProcess];
+export function spawnCp(cmd: string, args: string[]): [Promise<Result>, ChildProcess];
+export function spawnCp(cmd: string, options: Options): [Promise<Result>, ChildProcess];
+export function spawnCp(cmd: string, args: string[], options: Options): [Promise<Result>, ChildProcess];
+export function spawnCp(cmd: string, arg_1?: string[] | Options, arg_2?: Options): [Promise<Result>, ChildProcess] {
 
 	// get the eventual opts and build the spawn option
 	const args: string[] | undefined = (arg_1 && arg_1 instanceof Array) ? arg_1 : undefined;
@@ -70,14 +89,18 @@ export async function spawn(cmd: string, arg_1?: string[] | Options, arg_2?: Opt
 	let stdout: string | number | WriteStream = "pipe";
 	let stderr: string | number | WriteStream = "pipe";
 
+	// Note: for now use the fs sync operation (should be fast anyway)
 	if (opts.toFile) {
 		opts.toConsole = false; // can only one or the other. 
 		let toFileInfo = path.parse(opts.toFile);
-		await fsMkdirs(toFileInfo.dir);
+		fs.mkdirSync(toFileInfo.dir);
 
-		if (await fsExists(opts.toFile)) {
-			await fsUnlink(opts.toFile);
-		}
+		try {
+			if (fs.statSync(opts.toFile).isFile()) {
+				fs.unlinkSync(opts.toFile);
+			}
+		} catch (ex) { } // do nothing if does not exist
+
 
 		stdout = fs.openSync(opts.toFile, "a");
 		stderr = fs.openSync(opts.toFile, "a");
@@ -97,7 +120,7 @@ export async function spawn(cmd: string, arg_1?: string[] | Options, arg_2?: Opt
 	var stdio = cpOpts.stdio || ["pipe", stdout, stderr];
 	cpOpts.stdio = stdio;
 
-	let ps: cp.ChildProcess | undefined;
+	let ps: ChildProcess | undefined;
 
 	const promise = new Promise<Result>(function (resolve, reject) {
 
@@ -158,7 +181,7 @@ export async function spawn(cmd: string, arg_1?: string[] | Options, arg_2?: Opt
 		});
 	});
 
-	return promise;
+	return [promise, ps!];
 }
 
 
