@@ -24,13 +24,16 @@ interface Options {
 	ignoreFail?: boolean;
 	/** ["stdout","stderr"] if any of those set, it will get captured and returned (i.e. resolve as {stdout, stderr}) */
 	capture?: string | string[];
+	/** Optional input to be written to stdin */
+	input?: string;
 	/** forward of the stdout.on("data") to this function. This will turn stdio stdout to the default 'pipe' and therefore not printed to console */
 	onStdout?: (data: any) => void;
 	/** forward of the stderr.on("data") to this function. This will turn stdio stderr to the default 'pipe' and therefore not printed to console */
 	onStderr?: (data: any) => void;
-	/** Any other child_process_options (https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options) 
+	/** 
+	 *  Any other child_process_options (https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options) 
 	 *  if .stdio is set, the it will take precedence on the above
-	*/
+	 */
 	[key: string]: any;
 }
 
@@ -145,6 +148,11 @@ export function spawnCp(cmd: string, arg_1?: string[] | Options, arg_2?: Options
 
 		// TODO: needs to fix the type to not have to cast to any
 		ps = cp.spawn.apply(cp, params as any);
+
+		if (opts?.input) {
+			ps.stdin?.write(opts.input);
+			ps.stdin?.end();
+		}
 
 		if (ps.stdout) {
 			ps.stdout.on("data", (data: any) => {
