@@ -30,6 +30,9 @@ interface Options {
 	onStdout?: (data: any) => void;
 	/** forward of the stderr.on("data") to this function. This will turn stdio stderr to the default 'pipe' and therefore not printed to console */
 	onStderr?: (data: any) => void;
+
+	shell?: boolean | string;
+
 	/** 
 	 *  Any other child_process_options (https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options) 
 	 *  if .stdio is set, the it will take precedence on the above
@@ -122,6 +125,7 @@ export function spawnCp(cmd: string, arg_1?: string[] | Options, arg_2?: Options
 	// the passed stdio will aways take precedence
 	var stdio = cpOpts.stdio || ["pipe", stdout, stderr];
 	cpOpts.stdio = stdio;
+	cpOpts.shell = opts.shell;
 
 	let ps: ChildProcess | undefined;
 
